@@ -2,24 +2,12 @@
 
 MicroCommChannel::MicroCommChannel()
 {
-    LoopFrequency = (uint_least8_t) 2000;
-    CommFrequency = (uint_least8_t) 250;
-    CommFailureCounter = 0;
     /// - Start off in RECEIVING state.
     ActiveState = RECEIVING;
     PacketHeader = 0x534F4521;
     TxCrc32 = 0x0000;
     RxByteCounter = 0;
-    TxByteCounter = 0;
-    CommandPacketNumBytes = CommandPacket_size + 8;
-    ResetNumCycles = 0;
-    /// - Require 8 frames to complete a comm reset.
-    ResetWaitCycles = (LoopFrequency/CommFrequency)*3;
-    CountCmdPacketTransitTime = 0;
     /// - Compute the maximum time we will wait to received the full cmd packet.
-    uint_least8_t numTransits = (CommandPacketNumBytes / 4);
-    uint_least8_t remainderTransit = (CommandPacketNumBytes % 4 == 0) ? 0: 1;
-    MaxCmdPacketTransitTime = (numTransits+remainderTransit)*(LoopFrequency/CommFrequency);
     ClearBuffers();
 }
 
@@ -68,19 +56,6 @@ int MicroCommChannel::RunComm() {
                 return TX_PACKET_FAIL;
             }
             ActiveState = RECEIVING;
-        break;
-
-        case RESETTING_COMM:
-            /// Allow time for the comm to reset. This gives time for the
-            /// PC side to also detect the presence of a failure, clear its
-            /// its comm buffers and reset its state.
-            ResetNumCycles++;
-            if (ResetNumCycles >= ResetWaitCycles){
-                ResetNumCycles = 0;
-                CommFailureCounter++;
-                ActiveState = RECEIVING;
-            }
-            return RESETTING;
         break;
 
         default:
@@ -195,5 +170,4 @@ void MicroCommChannel::ClearBuffers(){
 void MicroCommChannel::ClearBuffersAndReset(){
     ClearBuffers();
     RxByteCounter = 0;
-    ActiveState = RESETTING_COMM;
 }

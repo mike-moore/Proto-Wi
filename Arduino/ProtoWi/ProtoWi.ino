@@ -1,11 +1,9 @@
 #include "ProtobuffSerial.h"
 
 ProtobuffSerial serialComm;          // - Initialize an instance of the protbuff serial class to do communication
-unsigned long cycleTimeMillis = 1;   // - Loop rate in milliseconds.
+unsigned long cycleTimeMillis = 100;   // - Loop rate in milliseconds.
 
 void setup(){
-  serialComm.LoopFrequency = 1/(cycleTimeMillis/1000);
-  serialComm.CommFrequency = 250; // - Must match what's configured on Usb Receiver side.
   serialComm.InitHw();
 }
 

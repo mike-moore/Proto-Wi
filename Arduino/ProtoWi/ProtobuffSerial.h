@@ -15,6 +15,7 @@
 
 #include <Arduino.h>
 #include "MicroCommChannel.h"
+#include <SoftwareSerial.h>
 
 ///////////////////////////////////////////////////////////////
 /// @class ProtobuffSerial
@@ -30,8 +31,7 @@ class ProtobuffSerial : public MicroCommChannel {
   virtual int ReadPacket();
   virtual int WritePacket();
   virtual bool ValidCrc();
-  uint_least8_t RxByteCounter;
-  uint_least8_t TxByteCounter;
+  SoftwareSerial debugSerial = SoftwareSerial(2,3);
 };
 
 #endif
