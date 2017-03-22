@@ -9,12 +9,16 @@ class UtSerialCommunication(unittest.TestCase):
 
     def setUp(self):
         self.testArticle = SerialCommunication("/dev/ttyUSB0")
+        self.testArticle.run()
 
     def tearDown(self):
         self.testArticle.stop()
 
     def test_commandArduino(self):
         self.testArticle.commandArduino()
+        sleep(1)
+        self.testArticle.commandArduino()
+        sleep(1)
 
 
 if __name__ == '__main__':
