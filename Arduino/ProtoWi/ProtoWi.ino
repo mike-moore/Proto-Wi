@@ -1,41 +1,44 @@
+#include "RobotState.h"
 #include "ProtobuffSerial.h"
+#include "CommandAndDataHandler.h"
 
-ProtobuffSerial serialComm;          // - Initialize an instance of the protbuff serial class to do communication
+// - Initialize an instance of the robot's state registry
+RobotState robotState;
+// - Initialize an instance of the protbuff serial class to do communication
+ProtobuffSerial serialComm;
+// - Initialize an instance of the command and data handler
+CommandAndDataHandler cmdAndDataHandler(serialComm.Commands, serialComm.Telemetry, robotState);
+
+
 unsigned long cycleTimeMillis = 100;   // - Loop rate in milliseconds.
 float desiredHeading = 0.0;
 float desiredDistance = 0.0;
 
 void setup(){
+  // - Serial comm init
   serialComm.InitHw();
   serialComm.Telemetry.MeasuredHeading = 0.0;
   serialComm.Telemetry.MeasuredDistance = 0.0;
 }
 
 void loop(){
-  serialComm.RunComm();
-  // - Simulates acting on a received command in a way that effects
-  //   the telemetry sent back to the Arduino.
+  /// - Read commands from the serial port.
+  serialComm.Rx();
+  /// - Forward received commands on to C&DH
+  if (serialComm.NewCommandsArrived()){
+    cmdAndDataHandler.ProcessCmds();
+  }
+  /// Execute the robot control logic 
   performControl();
-  delay(cycleTimeMillis); // Delay for the control loop period. Milliseconds
+  /// Have C&DH prepare the robot telemetry for transmission
+  cmdAndDataHandler.LoadTelemetry();
+  /// - Send the telemetry over the serial port
+  serialComm.Tx();
+  /// - Rinse and repeat
+  delay(cycleTimeMillis);
 }
 
 void performControl(){
-  if (serialComm.Commands.has_WayPointCmd){
-    Serial.println("New WayPoint Command Received ... ");
-    desiredHeading = serialComm.Commands.WayPointCmd.Heading;
-    desiredDistance = serialComm.Commands.WayPointCmd.Distance;
-    Serial.print("WayPoint name : ");
-    Serial.println(serialComm.Commands.WayPointCmd.Name);
-    Serial.print("Waypoint heading : ");
-    Serial.println(desiredHeading);
-    Serial.print("Waypoint distance : ");
-    Serial.println(desiredDistance);
-    /// - Clear the way point command... it has been processed.
-    serialComm.Commands.has_WayPointCmd = false;
-  }
-  /// - Send back a measured heading and distance that is a fraction
-  ///   of the commanded distance.
-  serialComm.Telemetry.MeasuredHeading = desiredHeading*0.75;
-  serialComm.Telemetry.MeasuredDistance = desiredDistance*0.75;
+  robotState.ResponseSignal = robotState.ControlSignal*0.95;
 }
 
