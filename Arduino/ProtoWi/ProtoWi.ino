@@ -39,6 +39,8 @@ void loop(){
 }
 
 void performControl(){
+  robotState.SensedHeading = 45.0;
+  robotState.SensedDistance = 5.0;
   robotState.ResponseSignal = robotState.ControlSignal*0.95;
 }
 

@@ -29,7 +29,7 @@ int ProtobuffSerial::ReadPacket() {
             RxBuffer[RxByteCounter++] = mySerial.read();
         }
     }
-    if (RxByteCounter >= 19){
+    if (RxByteCounter){
 	 	return RX_PACKET_READY;
 	}
 	return RX_READING_PACKET;

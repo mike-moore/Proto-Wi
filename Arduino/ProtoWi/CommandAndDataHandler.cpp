@@ -10,14 +10,16 @@ CommandAndDataHandler::CommandAndDataHandler(CommandPacket& commands, TelemetryP
 CommandAndDataHandler::~CommandAndDataHandler() {}
 
 void CommandAndDataHandler::ProcessCmds() {
-    Serial.println("Processing New Command Received ... ");
     /// - Iterate over and process any rover commands that were sent
     for (uint_least8_t indx = 0; indx < Commands.RoverCmds_count; indx++){
+        Serial.println("Processing New Rover Command Received ... ");
         ProcessRoverCmd(Commands.RoverCmds[indx]);
     }
-    /// - Process the way point command if it was sent (must have name to be 
-    ///   a valid way-point so we just check for that)
+    /// - Process the way point command if it was sent and valid
     if (strcmp(Commands.WayPointCmd.Name, "INVALID")){
+        return;
+    }else{
+        Serial.println("Processing New WayPoint Command Received ... ");
         ProcessWayPointCmd(Commands.WayPointCmd);
     }
 }
