@@ -14,6 +14,8 @@ class SerialCommunication(object):
 
 	def run(self):
 		self.active = True
+		self.serialPort.flushInput()
+		self.serialPort.flushOutput()
 		self.readTelemetryThread.start()
 
 	def stop(self):
@@ -30,13 +32,15 @@ class SerialCommunication(object):
 			bytes_rcvd = self.readRawBytes()
 			if bytes_rcvd:
 				self.unpackTelemetry(bytes_rcvd)
-			time.sleep(0.1)
+			time.sleep(0.2)
 
 	def sendCommand(self, cmd):
+		print ":".join("{:02x}".format(ord(c)) for c in cmd)
 		self.serialPort.write(cmd)
 
 	def commandArduino(self, cmd):
 		if (isinstance(cmd, comm_packet_pb2.CommandPacket)):
+			print cmd
 			# Send down the serialized command
 			self.sendCommand(cmd.SerializeToString())
 		else:
@@ -51,6 +55,8 @@ class SerialCommunication(object):
 
 	def unpackTelemetry(self, raw_bytes):
 		wb_tlm = comm_packet_pb2.TelemetryPacket()
+		print "Bytes to be unpacked :"
+		print ":".join("{:02x}".format(ord(c)) for c in raw_bytes)
 		wb_tlm.ParseFromString(raw_bytes)
 		print "Received Data ... "
 		print "MeasuredHeading : " + str(wb_tlm.MeasuredHeading)

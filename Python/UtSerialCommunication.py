@@ -17,16 +17,20 @@ class UtSerialCommunication(unittest.TestCase):
 
     def test_commandArduino(self):
         cmd_packet = comm_packet_pb2.CommandPacket()
-        # test sending an empty packet
-        self.testArticle.commandArduino(cmd_packet)
-        sleep(1)
+        # print "Sending empty command packet"
+        # self.testArticle.commandArduino(cmd_packet)
+        # sleep(1)
         # test sending a way point
-        cmd_packet.WayPoint = comm_packet_pb2.WayPoint()
-        cmd_packet.WayPoint.Heading = 45.0
-        cmd_packet.WayPoint.Distance = 2.0
-        cmd_packet.WayPoint.Name = "Suck My Ballz"
-        self.testArticle.commandArduino(cmd_packet)
-        sleep(1)
+#        cmd_packet.WayPointCmd = comm_packet_pb2.WayPoint()
+        packets_sent = 0
+        while packets_sent < 10:
+	        print "Sending way point command"
+	        cmd_packet.WayPointCmd.Heading = 45.0
+	        cmd_packet.WayPointCmd.Distance = 2.0
+	        cmd_packet.WayPointCmd.Name = "Alpha"
+	        self.testArticle.commandArduino(cmd_packet)
+	        sleep(2)
+	        packets_sent += 1
 
 
 if __name__ == '__main__':
