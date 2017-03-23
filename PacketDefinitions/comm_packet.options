@@ -1,0 +1,10 @@
+# comm_packet.options
+
+# Set max size for way point name
+WayPoint.Name max_size:15
+
+# Set max number of commands that can be sent at once
+CommandPacket.RoverCmds max_count:5
+
+# Set max number of rover status variables that can be sent at once
+TelemetryPacket.RoverStatus max_count:5

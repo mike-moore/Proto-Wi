@@ -78,6 +78,7 @@ class ProtobuffSerial {
   uint_least8_t RxBuffer[COMM_MAX_BUFF_SIZE];
   uint32_t TxCrc32;
   uint_least8_t RxByteCounter;
+  uint_least8_t NumBytesToSend;
 /// DEBUG ONLY
   void PrintHex8(uint_least8_t *data, uint_least8_t length);
 };

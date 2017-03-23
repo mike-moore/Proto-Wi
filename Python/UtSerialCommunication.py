@@ -17,12 +17,14 @@ class UtSerialCommunication(unittest.TestCase):
 
     def test_commandArduino(self):
         cmd_packet = comm_packet_pb2.CommandPacket()
-        # Populate all required fields
-        cmd_packet.NormalizedVoltage = 6.0
-        cmd_packet.SecondCommand = 10.0
+        # test sending an empty packet
         self.testArticle.commandArduino(cmd_packet)
         sleep(1)
-        cmd_packet.NormalizedVoltage = -6.0
+        # test sending a way point
+        cmd_packet.WayPoint = comm_packet_pb2.WayPoint()
+        cmd_packet.WayPoint.Heading = 45.0
+        cmd_packet.WayPoint.Distance = 2.0
+        cmd_packet.WayPoint.Name = "Suck My Ballz"
         self.testArticle.commandArduino(cmd_packet)
         sleep(1)
 

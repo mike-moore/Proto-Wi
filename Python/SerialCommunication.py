@@ -52,10 +52,9 @@ class SerialCommunication(object):
 	def unpackTelemetry(self, raw_bytes):
 		wb_tlm = comm_packet_pb2.TelemetryPacket()
 		wb_tlm.ParseFromString(raw_bytes)
-		print "Received Data"
-		print "Position : " + str(wb_tlm.Position)
-		print "Velocity : " + str(wb_tlm.Velocity)
-		print "New Telemetry : " + str(wb_tlm.NewTelemetry)
+		print "Received Data ... "
+		print "MeasuredHeading : " + str(wb_tlm.MeasuredHeading)
+		print "MeasuredDistance : " + str(wb_tlm.MeasuredDistance)
 		self.tlmQueue.appendleft(wb_tlm)
 
 

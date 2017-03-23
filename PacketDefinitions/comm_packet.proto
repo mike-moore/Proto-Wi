@@ -12,12 +12,12 @@ message IdValuePair {
 }
 
 message CommandPacket {
-    optional WayPoint = 1;
-    repeated IdValuePair Cmds = 2;
+    optional WayPoint WayPointCmd = 1;
+    repeated IdValuePair RoverCmds = 2;
 }
 
 message TelemetryPacket {
     required float MeasuredHeading = 1;
     required float MeasuredDistance = 2;
-    repeated IdValuePair StatusVariables = 3;
+    repeated IdValuePair RoverStatus = 3;
 }

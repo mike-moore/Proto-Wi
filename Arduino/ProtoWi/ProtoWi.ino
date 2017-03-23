@@ -5,6 +5,8 @@ unsigned long cycleTimeMillis = 100;   // - Loop rate in milliseconds.
 
 void setup(){
   serialComm.InitHw();
+  serialComm.Telemetry.MeasuredHeading = 0.0;
+  serialComm.Telemetry.MeasuredDistance = 0.0;
 }
 
 void loop(){
@@ -16,14 +18,16 @@ void loop(){
 }
 
 void performControl(){
-  if (serialComm.Commands.NormalizedVoltage < 0){
-    serialComm.Telemetry.Position = -1.0;
-    serialComm.Telemetry.Velocity = -2.0;
-    serialComm.Telemetry.NewTelemetry = -3.0;
-  }else{
-    serialComm.Telemetry.Position = 1.0;   
-    serialComm.Telemetry.Velocity = 2.0;
-    serialComm.Telemetry.NewTelemetry = 3.0;
+  if (serialComm.Commands.has_WayPointCmd){
+    Serial.println("New WayPoint Command Received ... ");
+    float desiredHeading = serialComm.Commands.WayPointCmd.Heading;
+    float desiredDistance = serialComm.Commands.WayPointCmd.Distance;
+    Serial.print("WayPoint name : ");
+    Serial.print(serialComm.Commands.WayPointCmd.Name);
+    /// - Send back a measured heading and distance that is a fraction
+    ///   of the commanded distance.
+    serialComm.Telemetry.MeasuredHeading = desiredHeading*0.75;
+    serialComm.Telemetry.MeasuredDistance = desiredDistance*0.75;
   }
 }
 

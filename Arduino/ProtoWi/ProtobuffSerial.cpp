@@ -7,6 +7,7 @@ ProtobuffSerial::ProtobuffSerial()
     PacketHeader = 0x534F4521;
     TxCrc32 = 0x0000;
     RxByteCounter = 0;
+    NumBytesToSend = 0;
     /// - Compute the maximum time we will wait to received the full cmd packet.
     ClearBuffers();
 }
@@ -29,10 +30,9 @@ int ProtobuffSerial::ReadPacket() {
 	    // read the incoming byte:
 	    RxBuffer[RxByteCounter++] = mySerial.read();
     }
-	if (RxByteCounter >= CommandPacket_size){
+	if (RxByteCounter){
         Serial.println("Full Cmd Packet Received: ");
         PrintHex8(RxBuffer, RxByteCounter);
-        Serial.println("");
         Serial.println("Attempting to unpack ... ");
 	 	RxByteCounter = 0;
 	 	return RX_PACKET_READY;
@@ -41,21 +41,24 @@ int ProtobuffSerial::ReadPacket() {
 }
 
 int ProtobuffSerial::WritePacket() {
-    mySerial.write(TxBuffer, TelemetryPacket_size);
+    mySerial.write(TxBuffer, NumBytesToSend);
     return TX_PACKET_SUCCESS;
 }
 
 bool ProtobuffSerial::ValidCrc(){
-    /// - Compute the CRC on the command packet we received.
-    uint32_t computed_crc32 = CommCrc32::crc32(&RxBuffer[4], CommandPacket_size, 0);
-    /// - Unload the CRC32 that was sent over the wire.
-    uint32_t rcvd_crc32 = 0;
-    uint16_t crcStartIndx = 4 + CommandPacket_size;
-    uint16_t lowerWord = (RxBuffer[crcStartIndx+1] << 8) | RxBuffer[crcStartIndx];
-    uint16_t upperWord = (RxBuffer[crcStartIndx+3] << 8) | RxBuffer[crcStartIndx+2];
-    rcvd_crc32 = ((uint32_t) upperWord << 16) | lowerWord;
-    /// - Check received CRC with what was computed
-    return rcvd_crc32 == computed_crc32;
+    // /// - Compute the CRC on the command packet we received.
+    // uint32_t computed_crc32 = CommCrc32::crc32(&RxBuffer[4], CommandPacket_size, 0);
+    // /// - Unload the CRC32 that was sent over the wire.
+    // uint32_t rcvd_crc32 = 0;
+    // uint16_t crcStartIndx = 4 + CommandPacket_size;
+    // uint16_t lowerWord = (RxBuffer[crcStartIndx+1] << 8) | RxBuffer[crcStartIndx];
+    // uint16_t upperWord = (RxBuffer[crcStartIndx+3] << 8) | RxBuffer[crcStartIndx+2];
+    // rcvd_crc32 = ((uint32_t) upperWord << 16) | lowerWord;
+    // /// - Check received CRC with what was computed
+    // return rcvd_crc32 == computed_crc32;
+
+    // TODO Implement CRC checking
+    return true;
 }
 
 
@@ -125,6 +128,7 @@ bool ProtobuffSerial::Encode() {
     {
         return false;
     }
+    NumBytesToSend = outstream.bytes_written;
     /// - Compute and write the CRC32 to the end of the Tx buffer.
     TxCrc32 = CommCrc32::crc32(&TxBuffer[4], outstream.bytes_written, 0);
     // WriteCrc32();
@@ -141,7 +145,7 @@ bool ProtobuffSerial::Decode() {
     // }
     /// - Create a stream that reads from the receive buffer... decode from
     ///   byte 5 of the Rx Buffer to command packet size
-    pb_istream_t stream = pb_istream_from_buffer(RxBuffer, CommandPacket_size);
+    pb_istream_t stream = pb_istream_from_buffer(RxBuffer, RxByteCounter);
     /// - Decode the command packet from the RxBuffer
     if (!pb_decode(&stream, CommandPacket_fields, &Commands))
     {

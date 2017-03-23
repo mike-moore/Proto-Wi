@@ -18,31 +18,38 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='comm_packet.proto',
   package='',
-  serialized_pb=_b('\n\x11\x63omm_packet.proto\"A\n\rCommandPacket\x12\x19\n\x11NormalizedVoltage\x18\x01 \x02(\x02\x12\x15\n\rSecondCommand\x18\x02 \x02(\x02\"K\n\x0fTelemetryPacket\x12\x10\n\x08Position\x18\x01 \x02(\x02\x12\x10\n\x08Velocity\x18\x02 \x02(\x02\x12\x14\n\x0cNewTelemetry\x18\x03 \x02(\x02')
+  serialized_pb=_b('\n\x11\x63omm_packet.proto\";\n\x08WayPoint\x12\x0f\n\x07Heading\x18\x01 \x02(\x02\x12\x10\n\x08\x44istance\x18\x02 \x02(\x02\x12\x0c\n\x04Name\x18\x03 \x02(\t\"(\n\x0bIdValuePair\x12\n\n\x02Id\x18\x01 \x02(\r\x12\r\n\x05Value\x18\x02 \x01(\x02\"P\n\rCommandPacket\x12\x1e\n\x0bWayPointCmd\x18\x01 \x01(\x0b\x32\t.WayPoint\x12\x1f\n\tRoverCmds\x18\x02 \x03(\x0b\x32\x0c.IdValuePair\"g\n\x0fTelemetryPacket\x12\x17\n\x0fMeasuredHeading\x18\x01 \x02(\x02\x12\x18\n\x10MeasuredDistance\x18\x02 \x02(\x02\x12!\n\x0bRoverStatus\x18\x03 \x03(\x0b\x32\x0c.IdValuePair')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
 
-_COMMANDPACKET = _descriptor.Descriptor(
-  name='CommandPacket',
-  full_name='CommandPacket',
+_WAYPOINT = _descriptor.Descriptor(
+  name='WayPoint',
+  full_name='WayPoint',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='NormalizedVoltage', full_name='CommandPacket.NormalizedVoltage', index=0,
+      name='Heading', full_name='WayPoint.Heading', index=0,
       number=1, type=2, cpp_type=6, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='SecondCommand', full_name='CommandPacket.SecondCommand', index=1,
+      name='Distance', full_name='WayPoint.Distance', index=1,
       number=2, type=2, cpp_type=6, label=2,
       has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='Name', full_name='WayPoint.Name', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -58,34 +65,27 @@ _COMMANDPACKET = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=21,
-  serialized_end=86,
+  serialized_end=80,
 )
 
 
-_TELEMETRYPACKET = _descriptor.Descriptor(
-  name='TelemetryPacket',
-  full_name='TelemetryPacket',
+_IDVALUEPAIR = _descriptor.Descriptor(
+  name='IdValuePair',
+  full_name='IdValuePair',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='Position', full_name='TelemetryPacket.Position', index=0,
-      number=1, type=2, cpp_type=6, label=2,
+      name='Id', full_name='IdValuePair.Id', index=0,
+      number=1, type=13, cpp_type=3, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Velocity', full_name='TelemetryPacket.Velocity', index=1,
-      number=2, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='NewTelemetry', full_name='TelemetryPacket.NewTelemetry', index=2,
-      number=3, type=2, cpp_type=6, label=2,
+      name='Value', full_name='IdValuePair.Value', index=1,
+      number=2, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -101,12 +101,112 @@ _TELEMETRYPACKET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=88,
-  serialized_end=163,
+  serialized_start=82,
+  serialized_end=122,
 )
 
+
+_COMMANDPACKET = _descriptor.Descriptor(
+  name='CommandPacket',
+  full_name='CommandPacket',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='WayPointCmd', full_name='CommandPacket.WayPointCmd', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='RoverCmds', full_name='CommandPacket.RoverCmds', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=124,
+  serialized_end=204,
+)
+
+
+_TELEMETRYPACKET = _descriptor.Descriptor(
+  name='TelemetryPacket',
+  full_name='TelemetryPacket',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='MeasuredHeading', full_name='TelemetryPacket.MeasuredHeading', index=0,
+      number=1, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='MeasuredDistance', full_name='TelemetryPacket.MeasuredDistance', index=1,
+      number=2, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='RoverStatus', full_name='TelemetryPacket.RoverStatus', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=206,
+  serialized_end=309,
+)
+
+_COMMANDPACKET.fields_by_name['WayPointCmd'].message_type = _WAYPOINT
+_COMMANDPACKET.fields_by_name['RoverCmds'].message_type = _IDVALUEPAIR
+_TELEMETRYPACKET.fields_by_name['RoverStatus'].message_type = _IDVALUEPAIR
+DESCRIPTOR.message_types_by_name['WayPoint'] = _WAYPOINT
+DESCRIPTOR.message_types_by_name['IdValuePair'] = _IDVALUEPAIR
 DESCRIPTOR.message_types_by_name['CommandPacket'] = _COMMANDPACKET
 DESCRIPTOR.message_types_by_name['TelemetryPacket'] = _TELEMETRYPACKET
+
+WayPoint = _reflection.GeneratedProtocolMessageType('WayPoint', (_message.Message,), dict(
+  DESCRIPTOR = _WAYPOINT,
+  __module__ = 'comm_packet_pb2'
+  # @@protoc_insertion_point(class_scope:WayPoint)
+  ))
+_sym_db.RegisterMessage(WayPoint)
+
+IdValuePair = _reflection.GeneratedProtocolMessageType('IdValuePair', (_message.Message,), dict(
+  DESCRIPTOR = _IDVALUEPAIR,
+  __module__ = 'comm_packet_pb2'
+  # @@protoc_insertion_point(class_scope:IdValuePair)
+  ))
+_sym_db.RegisterMessage(IdValuePair)
 
 CommandPacket = _reflection.GeneratedProtocolMessageType('CommandPacket', (_message.Message,), dict(
   DESCRIPTOR = _COMMANDPACKET,
