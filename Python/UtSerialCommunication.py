@@ -4,6 +4,7 @@ import unittest
 from time import sleep
 # Need a serial communication component for this test
 from SerialCommunication import SerialCommunication
+import comm_packet_pb2
 
 class UtSerialCommunication(unittest.TestCase):
 
@@ -15,9 +16,14 @@ class UtSerialCommunication(unittest.TestCase):
         self.testArticle.stop()
 
     def test_commandArduino(self):
-        self.testArticle.commandArduino()
+        cmd_packet = comm_packet_pb2.CommandPacket()
+        # Populate all required fields
+        cmd_packet.NormalizedVoltage = 6.0
+        cmd_packet.SecondCommand = 10.0
+        self.testArticle.commandArduino(cmd_packet)
         sleep(1)
-        self.testArticle.commandArduino()
+        cmd_packet.NormalizedVoltage = -6.0
+        self.testArticle.commandArduino(cmd_packet)
         sleep(1)
 
 

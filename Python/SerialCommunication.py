@@ -35,14 +35,13 @@ class SerialCommunication(object):
 	def sendCommand(self, cmd):
 		self.serialPort.write(cmd)
 
-	def commandArduino(self):
-		print 'Sending command ... '
-		cmd_packet = comm_packet_pb2.CommandPacket()
-		# Populate all required fields
-		cmd_packet.NormalizedVoltage = 6.0
-		cmd_packet.SecondCommand = 10.0
-		# Send down the serialized command
-		self.sendCommand(cmd_packet.SerializeToString())
+	def commandArduino(self, cmd):
+		if (isinstance(cmd, comm_packet_pb2.CommandPacket)):
+			# Send down the serialized command
+			self.sendCommand(cmd.SerializeToString())
+		else:
+			raise TypeError
+
 
 	def readRawBytes(self):
 		bytes_read = ''
