@@ -1,66 +1,69 @@
 import serial, time, threading
 from collections import deque
 import comm_packet_pb2
+import logging
+from google.protobuf.message import EncodeError
 
 class SerialCommunication(object):
-	def __init__(self, portName):
-		self.serialPort = serial.Serial(port=portName, baudrate=9600, rtscts=True,dsrdtr=True)
-		self.readTelemetryThread = threading.Thread(target=self.readTelemetry) 
-		self.readTelemetryThread.daemon = True
-		self.active = False
-		self.tlmQueue = deque(maxlen=10)
-		if self.serialPort.isOpen():
-			print 'Serial communication running on port : ' + portName
+    def __init__(self, portName):
+        self.serialPort = serial.Serial(
+            port=portName, baudrate=9600, rtscts=True, dsrdtr=True)
+        self.resetPacketCounters()
+        if self.serialPort.isOpen():
+            logging.info('Serial communication running on port : ' + portName)
+            self.serialPort.flushInput()
+            self.serialPort.flushOutput()
 
-	def run(self):
-		self.active = True
-		self.serialPort.flushInput()
-		self.serialPort.flushOutput()
-		self.readTelemetryThread.start()
+    def sendCommand(self, cmd):
+        logging.debug(":".join("{:02x}".format(ord(c)) for c in cmd))
+        self.serialPort.write(cmd)
 
-	def stop(self):
-		self.active = False
+    def commandArduino(self, cmd):
+        if (isinstance(cmd, comm_packet_pb2.CommandPacket)):
+            # Send down the serialized command
+            try:
+                self.sendCommand(cmd.SerializeToString())
+            except EncodeError:
+            	logging.error("Failed to encode command packet. Are all required fields set?")
+            	raise IOError
 
-	def getTelemetry(self):
-		try:
-			return self.tlmQueue.popleft()
-		except IndexError:
-			print 'No telemetry data available. Is your connection active?'
+            # Give the Arduino time to respond.
+            time.sleep(1.0)
 
-	def readTelemetry(self):
-		while self.active:
-			bytes_rcvd = self.readRawBytes()
-			if bytes_rcvd:
-				self.unpackTelemetry(bytes_rcvd)
-			time.sleep(0.2)
+            # Unpack the received Arduino packet.
+            try:
+                response = self.readTelemetry()
+                self.NumReceivedPackets += 1
+                return response
+            except IOError:
+                self.NumFailedPackets += 1
+                return None
+        else:
+            raise TypeError
 
-	def sendCommand(self, cmd):
-		print ":".join("{:02x}".format(ord(c)) for c in cmd)
-		self.serialPort.write(cmd)
+    def readTelemetry(self):
+        bytes_rcvd = self.readRawBytes()
+        if bytes_rcvd:
+            return self.unpackTelemetry(bytes_rcvd)
+        else:
+            raise IOError
 
-	def commandArduino(self, cmd):
-		if (isinstance(cmd, comm_packet_pb2.CommandPacket)):
-			print cmd
-			# Send down the serialized command
-			self.sendCommand(cmd.SerializeToString())
-		else:
-			raise TypeError
+    def readRawBytes(self):
+        bytes_read = ''
+        while self.serialPort.inWaiting() > 0:
+            bytes_read += self.serialPort.read(1)
+        return bytes_read
 
+    def unpackTelemetry(self, raw_bytes):
+        wb_tlm = comm_packet_pb2.TelemetryPacket()
+        logging.debug("Bytes to be unpacked :")
+        logging.debug(":".join("{:02x}".format(ord(c)) for c in raw_bytes))
+        try:
+            wb_tlm.ParseFromString(raw_bytes)
+        except Exception:
+            raise IOError
+        return wb_tlm
 
-	def readRawBytes(self):
-		bytes_read = ''
-		while self.serialPort.inWaiting() > 0:
-			bytes_read += self.serialPort.read(1)
-		return bytes_read
-
-	def unpackTelemetry(self, raw_bytes):
-		wb_tlm = comm_packet_pb2.TelemetryPacket()
-		print "Bytes to be unpacked :"
-		print ":".join("{:02x}".format(ord(c)) for c in raw_bytes)
-		wb_tlm.ParseFromString(raw_bytes)
-		print "Received Data ... "
-		print "MeasuredHeading : " + str(wb_tlm.MeasuredHeading)
-		print "MeasuredDistance : " + str(wb_tlm.MeasuredDistance)
-		self.tlmQueue.appendleft(wb_tlm)
-
-
+    def resetPacketCounters(self):
+        self.NumFailedPackets = 0
+        self.NumReceivedPackets = 0

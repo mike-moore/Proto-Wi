@@ -3,6 +3,9 @@
 # Set max size for way point name
 WayPoint.Name max_size:15
 
+# Set max size for way point name
+IdValuePairFloat.Id max_size:15
+
 # Set max number of commands that can be sent at once
 CommandPacket.RoverCmds max_count:5
 

@@ -6,18 +6,18 @@ message WayPoint {
     required string Name = 3;
 }
 
-message IdValuePair {
-    required uint32 Id = 1;
+message IdValuePairFloat {
+    required string Id = 1;
     optional float Value = 2;
 }
 
 message CommandPacket {
     optional WayPoint WayPointCmd = 1;
-    repeated IdValuePair RoverCmds = 2;
+    repeated IdValuePairFloat RoverCmds = 2;
 }
 
 message TelemetryPacket {
     required float MeasuredHeading = 1;
     required float MeasuredDistance = 2;
-    repeated IdValuePair RoverStatus = 3;
+    repeated IdValuePairFloat RoverStatus = 3;
 }
