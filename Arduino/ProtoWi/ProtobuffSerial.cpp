@@ -26,15 +26,17 @@ int ProtobuffSerial::InitHw() {
 }
 
 int ProtobuffSerial::ReadPacket() {
-    while (mySerial.available() > 0) {
-	    // read the incoming byte:
-	    RxBuffer[RxByteCounter++] = mySerial.read();
+    int bytes_avail = mySerial.available();
+    if (bytes_avail) {
+        for (int byteNumber = 0; byteNumber < bytes_avail; byteNumber++){
+            RxBuffer[RxByteCounter++] = mySerial.read();
+        }
     }
-	if (RxByteCounter){
+    if (RxByteCounter){
         Serial.println("Full Cmd Packet Received: ");
         PrintHex8(RxBuffer, RxByteCounter);
+        Serial.println("");
         Serial.println("Attempting to unpack ... ");
-	 	RxByteCounter = 0;
 	 	return RX_PACKET_READY;
 	}
 	return RX_READING_PACKET;
@@ -83,15 +85,15 @@ int ProtobuffSerial::RunComm() {
             /// - First, decode the received commands.
             if (!Decode()){
                 Serial.print("Decode FAIL");
-                ClearBuffersAndReset();
                 ActiveState = RECEIVING;
+                ClearBuffersAndReset();
                 return UNLOAD_FAIL;
             }
             /// - Next, encode the telemetry.
             if (!Encode()){
                 Serial.print("Encode FAIL");
-                ClearBuffersAndReset();
                 ActiveState = RECEIVING;
+                ClearBuffersAndReset();
                 return LOAD_FAIL;
             }
             /// - Now, write the packet out to the channel
@@ -99,11 +101,12 @@ int ProtobuffSerial::RunComm() {
             if(tx_status == TX_PACKET_SUCCESS){
                 Serial.println("TX Success");
                 ActiveState = RECEIVING;
+                ClearBuffersAndReset();
                 return SUCCESS;
             }else if(tx_status == TX_PACKET_FAIL){
                 Serial.println("TX Fail");
-                ClearBuffersAndReset();
                 ActiveState = RECEIVING;
+                ClearBuffersAndReset();
                 return TX_PACKET_FAIL;
             }
             ActiveState = RECEIVING;
