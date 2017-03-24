@@ -15,8 +15,8 @@ ProtobuffSerial::~ProtobuffSerial() {
 }
 
 void ProtobuffSerial::InitHw() {
-	mySerial.begin(9600);
-    Serial.begin(9600);
+	mySerial.begin(57600);
+    Serial.begin(57600);
     while (!mySerial) {
         ; // wait for serial port to connect. Needed for native USB
     }
@@ -38,7 +38,7 @@ int ProtobuffSerial::ReadPacket() {
             RxBuffer[RxByteCounter++] = mySerial.read();
         }
     }
-    if(bytes_avail >= 4){
+    if(RxByteCounter >= 4){
         if (CheckCmdFooter()){
             return RX_PACKET_READY;
         }
@@ -60,7 +60,13 @@ int ProtobuffSerial::Rx() {
         ClearBuffersAndReset();
     }else if( rx_status == RX_PACKET_READY){
         if (!Decode()){
- //           Serial.println("Decode FAIL");
+//            Serial.println("Attempting to decode : ");
+//            PrintHex8(RxBuffer, RxByteCounter);
+//            Serial.print("Which is ");
+//            Serial.print(RxByteCounter);
+//            Serial.println(" bytes");
+//            Serial.println("");
+//            Serial.println("Decode FAIL");
             ClearBuffersAndReset();
             rx_status = UNLOAD_FAIL;
         }else{

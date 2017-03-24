@@ -9,8 +9,8 @@ ProtobuffSerial serialComm;
 // - Initialize an instance of the command and data handler
 CommandAndDataHandler cmdAndDataHandler(serialComm.Commands, serialComm.Telemetry, robotState);
 
-
-unsigned long cycleTimeMillis = 20;   // - Loop rate in milliseconds.
+// - Loop rate in milliseconds. 50 Hz
+unsigned long cycleTimeMillis = 20;
 float desiredHeading = 0.0;
 float desiredDistance = 0.0;
 
