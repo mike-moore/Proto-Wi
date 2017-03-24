@@ -5,11 +5,12 @@ import logging
 from google.protobuf.message import EncodeError
 
 class SerialCommunication(object):
-    def __init__(self, portName):
+    def __init__(self, portName, frequency=0.05):
         self.serialPort = serial.Serial(
-            port=portName, baudrate=9600, rtscts=True, dsrdtr=True)
+            port=portName, baudrate=57600, rtscts=True, dsrdtr=True)
         self.resetPacketCounters()
     	self.cmdFooter = "SOE!"
+    	self.CommFrequency = frequency
         if self.serialPort.isOpen():
             logging.info('Serial communication running on port : ' + portName)
             self.serialPort.flushInput()
@@ -30,7 +31,7 @@ class SerialCommunication(object):
             	raise IOError
 
             # Give the Arduino time to respond.
-            time.sleep(1.0)
+            time.sleep(self.CommFrequency)
 
             # Unpack the received Arduino packet.
             try:
