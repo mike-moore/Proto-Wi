@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from SerialCommunication import SerialCommunication
 from CmdResponseDefinitions import *
 from cmd import Cmd
@@ -6,9 +7,11 @@ from time import sleep
 class RobotTerminal(Cmd):
 
     def __init__(self):
+        Cmd.__init__(self)
         self.portName = "/dev/ttyUSB0"
 
     def do_set_port(self, args):
+        """Set the port name for the Arduino. eg set_port /dev/ttyUSB0"""
         self.portName = args
 
     def do_connect(self, args):
@@ -21,9 +24,11 @@ class RobotTerminal(Cmd):
 
     def do_send_waypoint(self, args):
         """Prompts the user to enter a way-point and then sends it to the Arduino"""
+        raise NotImplementedError
 
     def do_start_control(self, args):
         """Prompts the user to enter a way-point and then sends it to the Arduino"""
+        raise NotImplementedError
 
 if __name__ == '__main__':
     prompt = RobotTerminal()

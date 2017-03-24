@@ -1,12 +1,15 @@
 #!/usr/bin/python
 
 import unittest
+import logging, sys
+import numpy as np
+import matplotlib.pyplot as plt
 from time import sleep
+
 # Need a serial communication component for this test
 from SerialCommunication import SerialCommunication
 from CmdResponseDefinitions import *
 import comm_packet_pb2
-import logging, sys
 
 # Define a list of way-points for the purpose of testing
 test_way_point_1 = comm_packet_pb2.CommandPacket()
@@ -85,6 +88,18 @@ class UtSerialCommunication(unittest.TestCase):
         response = self.helper_SendOneCmdPacket(cmd_packet)
         self.helper_checkResponse(response)
 
+    def test_repeatedControlCommands(self):
+        logging.info("Sending repeated control signal commands")
+        sine_wave = self.helper_generateSineWave(amplitude=1.0)
+        print sine_wave
+        for sample in sine_wave:
+            cmd_packet = comm_packet_pb2.CommandPacket()
+            control_signal_cmd = cmd_packet.RoverCmds.add()
+            control_signal_cmd.Id = CTRL_ACTIVE
+            control_signal_cmd.Value = sample
+            response = self.helper_SendOneCmdPacket(cmd_packet)
+            self.helper_checkResponse(response)
+
     def helper_SendOneWayPoint(self, cmd_packet):
         logging.info("Sending way point command : " + cmd_packet.WayPointCmd.Name)
         return self.helper_SendOneCmdPacket(cmd_packet)
@@ -102,7 +117,11 @@ class UtSerialCommunication(unittest.TestCase):
             self.assertIsNone(response)
             self.assertTrue(self.testArticle.NumFailedPackets >= 1)
 
-
+    def helper_generateSineWave(self, amplitude=1.0, frequency=1.0, duration=1.0, stepSize=0.1):
+    	t = np.arange(0, duration, stepSize)
+    	# initiliaze the sin wave to be equal to time array
+        sine_wave = amplitude*np.sin((2*np.pi*frequency)*t)
+    	return sine_wave
 
 if __name__ == '__main__':
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG, format='%(levelname)s:%(message)s')
