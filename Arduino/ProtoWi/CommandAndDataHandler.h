@@ -16,6 +16,7 @@
 #include <Arduino.h>
 #include "comm_packet.pb.h"
 #include "RobotState.h"
+#include "CmdResponseDefinitions.h"
 
 ///////////////////////////////////////////////////////////////
 /// @class CommandAndDataHandler
@@ -37,7 +38,8 @@ class CommandAndDataHandler {
   bool SendResponseSignal;
   void ProcessRoverCmd(IdValuePairFloat & rover_cmd);
   void ProcessWayPointCmd(WayPoint & way_point_cmd);
-  void PackResponseSignal(uint_least8_t status_indx);
+  void PackInt(uint32_t id);
+  void PackFloat(uint32_t id, float value);
   void LoadRoverStatus();
 };
 
