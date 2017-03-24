@@ -10,27 +10,25 @@ CommandAndDataHandler::CommandAndDataHandler(CommandPacket& commands, TelemetryP
 CommandAndDataHandler::~CommandAndDataHandler() {}
 
 void CommandAndDataHandler::ProcessCmds() {
+    /// - Clear the count of Rover Status variables to be sent.
+    ///   This is determined based on which RoverCmds are
+    ///   received. It is incremented in LoadRoverStatus function.
+    Telemetry.RoverStatus_count = 0;
     /// - Iterate over and process any rover commands that were sent
     for (uint_least8_t indx = 0; indx < Commands.RoverCmds_count; indx++){
         Serial.println("Processing New Rover Command Received ... ");
         ProcessRoverCmd(Commands.RoverCmds[indx]);
     }
     /// - Process the way point command if it was sent and valid
+    ///   Invalid or no way-point sent defaults to 0 length string for its name
     if (strlen(Commands.WayPointCmd.Name)==0){
-        Serial.println("Pre-processing Invalid WayPoint ");
-        for (int indx = 0; indx < 15; indx++){
-            Serial.println(Commands.WayPointCmd.Name[indx]);
-        }
-        Serial.println(Commands.WayPointCmd.Name);
+        /// - Pack the waypoint rejected command
+        PackInt(WP_CMD_REJECT);
         return;
     }else{
-        Serial.println("Pre-processing WayPoint ");
-        for (int indx = 0; indx < 15; indx++){
-            Serial.println(Commands.WayPointCmd.Name[indx]);
-        }
-        Serial.println(Commands.WayPointCmd.Name);
-        Serial.println("Processing New WayPoint Command Received ... ");
         ProcessWayPointCmd(Commands.WayPointCmd);
+        /// - Pack the waypoint acknowledged command
+        PackInt(WP_CMD_ACCEPT);
     }
 }
 
@@ -48,7 +46,7 @@ void CommandAndDataHandler::ProcessRoverCmd(IdValuePairFloat & rover_cmd) {
     Serial.println(rover_cmd.Id);
     Serial.print("Rover Command Value : ");
     Serial.println(rover_cmd.Value);
-    if (rover_cmd.Id == 0xA501){
+    if (rover_cmd.Id == CTRL_ACTIVE){
         SendResponseSignal = true;
         State.ControlSignal = rover_cmd.Value;
     }
@@ -68,16 +66,22 @@ void CommandAndDataHandler::ProcessWayPointCmd(WayPoint & way_point_cmd) {
     Serial.println(way_point_cmd.Distance);
 }
 
-void CommandAndDataHandler::PackResponseSignal(uint_least8_t status_indx) {
-    Telemetry.RoverStatus[status_indx].Id = 0xB501;
-    Telemetry.RoverStatus[status_indx].Value = State.ResponseSignal;
+void CommandAndDataHandler::PackInt(uint32_t id) {
+    Telemetry.RoverStatus[Telemetry.RoverStatus_count].Id = id;
+    Telemetry.RoverStatus_count++;
+}
+
+void CommandAndDataHandler::PackFloat(uint32_t id, float value) {
+    Telemetry.RoverStatus[Telemetry.RoverStatus_count].Id = id;
+    Telemetry.RoverStatus[Telemetry.RoverStatus_count].Value = value;
+    Telemetry.RoverStatus[Telemetry.RoverStatus_count].has_Value = true;
+    Telemetry.RoverStatus_count++;
 }
 
 void CommandAndDataHandler::LoadRoverStatus() {
-    uint_least8_t status_indx = 0;
     if(SendResponseSignal){
-        PackResponseSignal(status_indx);
-        status_indx++;
+        PackFloat(RESPONSE_SIGNAL, State.ResponseSignal);
+        SendResponseSignal = false;
     }
 }
 
