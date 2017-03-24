@@ -4,6 +4,7 @@ import unittest
 from time import sleep
 # Need a serial communication component for this test
 from SerialCommunication import SerialCommunication
+from CmdResponseDefinitions import *
 import comm_packet_pb2
 import logging, sys
 
@@ -79,7 +80,7 @@ class UtSerialCommunication(unittest.TestCase):
         logging.info("Sending control signal command")
         cmd_packet = comm_packet_pb2.CommandPacket()
         control_signal_cmd = cmd_packet.RoverCmds.add()
-        control_signal_cmd.Id = 0xA501
+        control_signal_cmd.Id = CTRL_ACTIVE
         control_signal_cmd.Value = 2.3456
         response = self.helper_SendOneCmdPacket(cmd_packet)
         self.helper_checkResponse(response)

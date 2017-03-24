@@ -5,11 +5,14 @@ include ${NANO_PB_HOME}/extra/nanopb.mk
 
 PROTO_FILE = comm_packet.proto
 
-all: comm_packet
+all: comm_packet parse_cmd_ids
 
 comm_packet:
 	$(PROTOC) $(PROTOC_OPTS) --nanopb_out=$(ARDUINO_PROJECT_HOME) $(PROTO_FILE)
 	protoc --python_out=../Python/ $(PROTO_FILE)
 
+parse_cmd_ids:
+	python ParseCmdDefines.py
+
 clean:
-	rm -rf ${ARDUINO_PROJECT_HOME}/*.pb.* ../Python/*_pb2.py
+	rm -rf ${ARDUINO_PROJECT_HOME}/*.pb.* ../Python/*_pb2.py ../Python/CmdResponseDefinitions.py
