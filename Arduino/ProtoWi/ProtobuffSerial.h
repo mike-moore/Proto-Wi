@@ -54,6 +54,7 @@ class ProtobuffSerial {
  protected:
   SoftwareSerial mySerial = SoftwareSerial(2,3);
   int ReadPacket();
+  bool CheckCmdFooter();
   void WritePacket();
   bool Encode();
   bool Decode();
@@ -65,6 +66,7 @@ class ProtobuffSerial {
   uint_least8_t NumBytesToSend;
   bool TxReady;
   bool NewCmdsFlag;
+  uint_least8_t CmdFooter[4] = {0x53, 0x4F, 0x45, 0x21};
 /// DEBUG ONLY
   void PrintHex8(uint_least8_t *data, uint_least8_t length);
 };

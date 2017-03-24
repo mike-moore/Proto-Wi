@@ -22,6 +22,15 @@ void ProtobuffSerial::InitHw() {
     }
 }
 
+bool ProtobuffSerial::CheckCmdFooter(){
+    /// - Checks the last four bytes looking for the cmd footer
+    ///   This is how we know we are at the end of the message.
+    return RxBuffer[RxByteCounter-1] == CmdFooter[3] &&
+           RxBuffer[RxByteCounter-2] == CmdFooter[2] &&
+           RxBuffer[RxByteCounter-3] == CmdFooter[1] &&
+           RxBuffer[RxByteCounter-4] == CmdFooter[0];
+}
+
 int ProtobuffSerial::ReadPacket() {
     int bytes_avail = mySerial.available();
     if (bytes_avail) {
@@ -29,13 +38,18 @@ int ProtobuffSerial::ReadPacket() {
             RxBuffer[RxByteCounter++] = mySerial.read();
         }
     }
-    if (RxByteCounter){
-	 	return RX_PACKET_READY;
-	}
+    if(bytes_avail >= 4){
+        if (CheckCmdFooter()){
+            return RX_PACKET_READY;
+        }
+    }
 	return RX_READING_PACKET;
 }
 
 void ProtobuffSerial::WritePacket() {
+    Serial.println("Tx'n these bytes back : ");
+    PrintHex8(TxBuffer, NumBytesToSend);
+    Serial.println("");
     mySerial.write(TxBuffer, NumBytesToSend);
 }
 
@@ -46,7 +60,7 @@ int ProtobuffSerial::Rx() {
         ClearBuffersAndReset();
     }else if( rx_status == RX_PACKET_READY){
         if (!Decode()){
-            Serial.print("Decode FAIL");
+            Serial.println("Decode FAIL");
             ClearBuffersAndReset();
             rx_status = UNLOAD_FAIL;
         }else{
@@ -65,7 +79,7 @@ int ProtobuffSerial::Tx() {
     if (!TxReady){ return TX_PACKET_WAITING; }
     /// - Encode the telemetry.
     if (!Encode()){
-        Serial.print("Encode FAIL");
+        Serial.println("Encode FAIL");
         ClearBuffersAndReset();
         return LOAD_FAIL;
     }
@@ -90,9 +104,9 @@ bool ProtobuffSerial::Encode() {
 }
 
 bool ProtobuffSerial::Decode() {
-    /// - Create a stream that reads from the receive buffer... decode from
-    ///   byte 5 of the Rx Buffer to command packet size
-    pb_istream_t stream = pb_istream_from_buffer(RxBuffer, RxByteCounter);
+    /// - Create a stream that reads from the receive buffer... ignore
+    ///   footer's four bytes
+    pb_istream_t stream = pb_istream_from_buffer(RxBuffer, RxByteCounter-4);
     /// - Decode the command packet from the RxBuffer
     if (!pb_decode(&stream, CommandPacket_fields, &Commands))
     {

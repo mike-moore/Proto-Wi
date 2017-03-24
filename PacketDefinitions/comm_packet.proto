@@ -3,7 +3,7 @@ syntax = "proto2";
 message WayPoint {
     required float Heading = 1;
     required float Distance = 2;
-    required string Name = 3 [default="INVALID"];
+    required string Name = 3;
 }
 
 message IdValuePairFloat {

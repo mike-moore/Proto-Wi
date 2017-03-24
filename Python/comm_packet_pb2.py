@@ -18,7 +18,7 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='comm_packet.proto',
   package='',
-  serialized_pb=_b('\n\x11\x63omm_packet.proto\"D\n\x08WayPoint\x12\x0f\n\x07Heading\x18\x01 \x02(\x02\x12\x10\n\x08\x44istance\x18\x02 \x02(\x02\x12\x15\n\x04Name\x18\x03 \x02(\t:\x07INVALID\"-\n\x10IdValuePairFloat\x12\n\n\x02Id\x18\x01 \x02(\r\x12\r\n\x05Value\x18\x02 \x01(\x02\"U\n\rCommandPacket\x12\x1e\n\x0bWayPointCmd\x18\x01 \x01(\x0b\x32\t.WayPoint\x12$\n\tRoverCmds\x18\x02 \x03(\x0b\x32\x11.IdValuePairFloat\"l\n\x0fTelemetryPacket\x12\x17\n\x0fMeasuredHeading\x18\x01 \x02(\x02\x12\x18\n\x10MeasuredDistance\x18\x02 \x02(\x02\x12&\n\x0bRoverStatus\x18\x03 \x03(\x0b\x32\x11.IdValuePairFloat')
+  serialized_pb=_b('\n\x11\x63omm_packet.proto\";\n\x08WayPoint\x12\x0f\n\x07Heading\x18\x01 \x02(\x02\x12\x10\n\x08\x44istance\x18\x02 \x02(\x02\x12\x0c\n\x04Name\x18\x03 \x02(\t\"-\n\x10IdValuePairFloat\x12\n\n\x02Id\x18\x01 \x02(\r\x12\r\n\x05Value\x18\x02 \x01(\x02\"U\n\rCommandPacket\x12\x1e\n\x0bWayPointCmd\x18\x01 \x01(\x0b\x32\t.WayPoint\x12$\n\tRoverCmds\x18\x02 \x03(\x0b\x32\x11.IdValuePairFloat\"l\n\x0fTelemetryPacket\x12\x17\n\x0fMeasuredHeading\x18\x01 \x02(\x02\x12\x18\n\x10MeasuredDistance\x18\x02 \x02(\x02\x12&\n\x0bRoverStatus\x18\x03 \x03(\x0b\x32\x11.IdValuePairFloat')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -49,7 +49,7 @@ _WAYPOINT = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='Name', full_name='WayPoint.Name', index=2,
       number=3, type=9, cpp_type=9, label=2,
-      has_default_value=True, default_value=_b("INVALID").decode('utf-8'),
+      has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -65,7 +65,7 @@ _WAYPOINT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=21,
-  serialized_end=89,
+  serialized_end=80,
 )
 
 
@@ -101,8 +101,8 @@ _IDVALUEPAIRFLOAT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=91,
-  serialized_end=136,
+  serialized_start=82,
+  serialized_end=127,
 )
 
 
@@ -138,8 +138,8 @@ _COMMANDPACKET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=138,
-  serialized_end=223,
+  serialized_start=129,
+  serialized_end=214,
 )
 
 
@@ -182,8 +182,8 @@ _TELEMETRYPACKET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=225,
-  serialized_end=333,
+  serialized_start=216,
+  serialized_end=324,
 )
 
 _COMMANDPACKET.fields_by_name['WayPointCmd'].message_type = _WAYPOINT

@@ -1,6 +1,6 @@
 #include "CommandAndDataHandler.h"
 
-CommandAndDataHandler::CommandAndDataHandler(CommandPacket& commands, TelemetryPacket tlm, RobotState state)
+CommandAndDataHandler::CommandAndDataHandler(CommandPacket& commands, TelemetryPacket& tlm, RobotState& state)
  :
  Commands(commands),
  Telemetry(tlm),
@@ -16,9 +16,19 @@ void CommandAndDataHandler::ProcessCmds() {
         ProcessRoverCmd(Commands.RoverCmds[indx]);
     }
     /// - Process the way point command if it was sent and valid
-    if (strcmp(Commands.WayPointCmd.Name, "INVALID")){
+    if (strlen(Commands.WayPointCmd.Name)==0){
+        Serial.println("Pre-processing Invalid WayPoint ");
+        for (int indx = 0; indx < 15; indx++){
+            Serial.println(Commands.WayPointCmd.Name[indx]);
+        }
+        Serial.println(Commands.WayPointCmd.Name);
         return;
     }else{
+        Serial.println("Pre-processing WayPoint ");
+        for (int indx = 0; indx < 15; indx++){
+            Serial.println(Commands.WayPointCmd.Name[indx]);
+        }
+        Serial.println(Commands.WayPointCmd.Name);
         Serial.println("Processing New WayPoint Command Received ... ");
         ProcessWayPointCmd(Commands.WayPointCmd);
     }
@@ -33,7 +43,7 @@ void CommandAndDataHandler::LoadTelemetry() {
     LoadRoverStatus();
 }
 
-void CommandAndDataHandler::ProcessRoverCmd(const IdValuePairFloat & rover_cmd) {
+void CommandAndDataHandler::ProcessRoverCmd(IdValuePairFloat & rover_cmd) {
     Serial.print("Rover Command Received : ");
     Serial.println(rover_cmd.Id);
     Serial.print("Rover Command Value : ");
@@ -44,7 +54,7 @@ void CommandAndDataHandler::ProcessRoverCmd(const IdValuePairFloat & rover_cmd) 
     }
 }
 
-void CommandAndDataHandler::ProcessWayPointCmd(const WayPoint & way_point_cmd) {
+void CommandAndDataHandler::ProcessWayPointCmd(WayPoint & way_point_cmd) {
     /// - Add the way point to robot's state registry. This will make it
     ///   available for the guidance module.
     State.addWayPoint(way_point_cmd);
