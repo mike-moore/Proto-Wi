@@ -9,14 +9,16 @@ class SerialCommunication(object):
         self.serialPort = serial.Serial(
             port=portName, baudrate=9600, rtscts=True, dsrdtr=True)
         self.resetPacketCounters()
+    	self.cmdFooter = "SOE!"
         if self.serialPort.isOpen():
             logging.info('Serial communication running on port : ' + portName)
             self.serialPort.flushInput()
             self.serialPort.flushOutput()
 
     def sendCommand(self, cmd):
-        logging.debug(":".join("{:02x}".format(ord(c)) for c in cmd))
-        self.serialPort.write(cmd)
+    	cmd_and_footer = cmd+self.cmdFooter
+        logging.debug(":".join("{:02x}".format(ord(c)) for c in cmd_and_footer))
+        self.serialPort.write(cmd_and_footer)
 
     def commandArduino(self, cmd):
         if (isinstance(cmd, comm_packet_pb2.CommandPacket)):

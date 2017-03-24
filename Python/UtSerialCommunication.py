@@ -67,7 +67,7 @@ class UtSerialCommunication(unittest.TestCase):
         print response
 
     def test_commandOneWayPoint(self):
-        response = self.helper_SendOneCmdPacket(test_route[0])
+        response = self.helper_SendOneWayPoint(test_route[0])
         self.helper_checkResponse(response)
 
     def test_commandRoute(self):
@@ -79,14 +79,14 @@ class UtSerialCommunication(unittest.TestCase):
         logging.info("Sending control signal command")
         cmd_packet = comm_packet_pb2.CommandPacket()
         control_signal_cmd = cmd_packet.RoverCmds.add()
-        control_signal_cmd.Id = "Control Signal"
+        control_signal_cmd.Id = 0xA501
         control_signal_cmd.Value = 2.3456
         response = self.helper_SendOneCmdPacket(cmd_packet)
         self.helper_checkResponse(response)
 
     def helper_SendOneWayPoint(self, cmd_packet):
         logging.info("Sending way point command : " + cmd_packet.WayPointCmd.Name)
-        self.helper_SendOneCmdPacket(cmd_packet)
+        return self.helper_SendOneCmdPacket(cmd_packet)
 
     def helper_SendOneCmdPacket(self, cmd_packet):
         return self.testArticle.commandArduino(cmd_packet)
@@ -104,7 +104,7 @@ class UtSerialCommunication(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(stream=sys.stderr, level=logging.INFO, format='%(levelname)s:%(message)s')
+    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG, format='%(levelname)s:%(message)s')
     # Run the unit-tests
     suite = unittest.TestLoader().loadTestsFromTestCase(UtSerialCommunication)
     unittest.TextTestRunner(verbosity=2).run(suite)
