@@ -151,7 +151,6 @@ class UtSerialCommunication(unittest.TestCase):
 
     def helper_generateSineWave(self, amplitude=1.0, frequency=1.0, duration=1.0, stepSize=0.1):
     	t = np.arange(0, duration, stepSize)
-    	# initiliaze the sin wave to be equal to time array
         sine_wave = amplitude*np.sin((2*np.pi*frequency)*t)
     	return sine_wave
 
