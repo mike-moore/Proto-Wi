@@ -16,7 +16,7 @@ void CommandAndDataHandler::ProcessCmds() {
     Telemetry.RoverStatus_count = 0;
     /// - Iterate over and process any rover commands that were sent
     for (uint_least8_t indx = 0; indx < Commands.RoverCmds_count; indx++){
-        Serial.println("Processing New Rover Command Received ... ");
+        //Serial.println("Processing New Rover Command Received ... ");
         ProcessRoverCmd(Commands.RoverCmds[indx]);
     }
     /// - Process the way point command if it was sent and valid
@@ -42,10 +42,10 @@ void CommandAndDataHandler::LoadTelemetry() {
 }
 
 void CommandAndDataHandler::ProcessRoverCmd(IdValuePairFloat & rover_cmd) {
-    Serial.print("Rover Command Received : ");
-    Serial.println(rover_cmd.Id);
-    Serial.print("Rover Command Value : ");
-    Serial.println(rover_cmd.Value);
+    //Serial.print("Rover Command Received : ");
+    //Serial.println(rover_cmd.Id);
+    //Serial.print("Rover Command Value : ");
+    //Serial.println(rover_cmd.Value);
     if (rover_cmd.Id == CTRL_ACTIVE){
         SendResponseSignal = true;
         State.ControlSignal = rover_cmd.Value;
@@ -57,13 +57,13 @@ void CommandAndDataHandler::ProcessWayPointCmd(WayPoint & way_point_cmd) {
     ///   available for the guidance module.
     State.addWayPoint(way_point_cmd);
     /// - Debug message.
-    Serial.print("Adding WayPoint ");
-    Serial.print(way_point_cmd.Name);
-    Serial.println(" to route.");
-    Serial.print("WayPoint heading : ");
-    Serial.println(way_point_cmd.Heading);
-    Serial.print("WayPoint distance : ");
-    Serial.println(way_point_cmd.Distance);
+    //Serial.print("Adding WayPoint ");
+    //Serial.print(way_point_cmd.Name);
+    //Serial.println(" to route.");
+    //Serial.print("WayPoint heading : ");
+    //Serial.println(way_point_cmd.Heading);
+    //Serial.print("WayPoint distance : ");
+    //Serial.println(way_point_cmd.Distance);
 }
 
 void CommandAndDataHandler::PackInt(uint32_t id) {

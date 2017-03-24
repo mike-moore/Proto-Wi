@@ -47,9 +47,9 @@ int ProtobuffSerial::ReadPacket() {
 }
 
 void ProtobuffSerial::WritePacket() {
-    Serial.println("Tx'n these bytes back : ");
-    PrintHex8(TxBuffer, NumBytesToSend);
-    Serial.println("");
+//    Serial.println("Tx'n these bytes back : ");
+//    PrintHex8(TxBuffer, NumBytesToSend);
+//    Serial.println("");
     mySerial.write(TxBuffer, NumBytesToSend);
 }
 
@@ -60,7 +60,7 @@ int ProtobuffSerial::Rx() {
         ClearBuffersAndReset();
     }else if( rx_status == RX_PACKET_READY){
         if (!Decode()){
-            Serial.println("Decode FAIL");
+ //           Serial.println("Decode FAIL");
             ClearBuffersAndReset();
             rx_status = UNLOAD_FAIL;
         }else{
@@ -79,7 +79,7 @@ int ProtobuffSerial::Tx() {
     if (!TxReady){ return TX_PACKET_WAITING; }
     /// - Encode the telemetry.
     if (!Encode()){
-        Serial.println("Encode FAIL");
+//        Serial.println("Encode FAIL");
         ClearBuffersAndReset();
         return LOAD_FAIL;
     }
