@@ -9,8 +9,8 @@ ProtobuffSerial serialComm;
 // - Initialize an instance of the command and data handler
 CommandAndDataHandler cmdAndDataHandler(serialComm.Commands, serialComm.Telemetry, robotState);
 
-// - Loop rate in milliseconds. 50 Hz
-unsigned long cycleTimeMillis = 20;
+const long cycleTimeMillis = 20;
+unsigned long previousMillis = 0;
 float desiredHeading = 0.0;
 float desiredDistance = 0.0;
 
@@ -22,20 +22,25 @@ void setup(){
 }
 
 void loop(){
-  /// - Read commands from the serial port.
-  serialComm.Rx();
-  /// - Forward received commands on to C&DH
-  if (serialComm.NewCommandsArrived()){
-    cmdAndDataHandler.ProcessCmds();
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - previousMillis >= cycleTimeMillis) {
+    previousMillis = currentMillis;
+
+    /// - Read commands from the serial port.
+    serialComm.Rx();
+    /// - Forward received commands on to C&DH
+    if (serialComm.NewCommandsArrived()){
+      cmdAndDataHandler.ProcessCmds();
+    }
+    /// Execute the robot control logic 
+    performControl();
+    /// Have C&DH prepare the robot telemetry for transmission
+    cmdAndDataHandler.LoadTelemetry();
+    /// - Send the telemetry over the serial port
+    serialComm.Tx();
   }
-  /// Execute the robot control logic 
-  performControl();
-  /// Have C&DH prepare the robot telemetry for transmission
-  cmdAndDataHandler.LoadTelemetry();
-  /// - Send the telemetry over the serial port
-  serialComm.Tx();
-  /// - Rinse and repeat
-  delay(cycleTimeMillis);
+  
 }
 
 void performControl(){
